@@ -1,0 +1,38 @@
+# Crude template for the tech quiz. Modify it to fit your needs, or use your own...
+# The only requirement is to be able to quickly bootstrap a test environment 
+# without installing anything on the host
+
+version: '3.1'
+
+services:
+
+  opencellid:
+    build:
+      context: ./app
+    depends_on:
+      - db
+    links:
+      - db
+    #restart: always
+    ports:
+      - 5000:5000
+    networks: 
+      - mon_reseau
+    #command: sh -c "wait-for-it db:3306 && python3 server.py"
+
+  db:
+    image: mysql:5.7
+    #restart: always
+    command: --max_allowed_packet=32505856  # Set max_allowed_packet to 256M 
+    ports:
+      - 32000:3306
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: opencellid
+      MYSQL_USER: test
+      MYSQL_PASSWORD: supersecret
+    networks: 
+      - mon_reseau
+
+networks: 
+  mon_reseau:
